@@ -18,12 +18,12 @@ concurrency:
 jobs:
   rdp:
     runs-on: windows-latest
-    timeout-minutes: 300   # EXACT 5 HOURS
+    timeout-minutes: 600   # EXACT 10 HOURS
 
     env:
       # ===== RDP CREDENTIALS =====
-      RDP_USER: DEVXRDP
-      RDP_PASS: Rdp!9Xq#2025
+      RDP_USER: ADMIN
+      RDP_PASS: Epson@3110
 
       # ===== FIXED TAILSCALE NAME =====
       TS_HOSTNAME: DEVXRDP
@@ -82,9 +82,9 @@ jobs:
 
           Enable-NetFirewallRule -DisplayGroup "Remote Desktop"
 
-      - name: KEEP ALIVE (5 HOURS CONTINUOUS)
+      - name: KEEP ALIVE (10 HOURS CONTINUOUS)
         run: |
-          $end = (Get-Date).AddHours(5)
+          $end = (Get-Date).AddHours(10)
           while ((Get-Date) -lt $end) {
             Start-Sleep -Seconds 60
           }
