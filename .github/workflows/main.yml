@@ -1,4 +1,4 @@
-name: DEVXRDP – RDP + Tailscale (5 Hours)
+Name: DEVXRDP – RDP + Tailscale (Auto-Rerun)
 
 on:
   workflow_dispatch:
@@ -89,5 +89,32 @@ jobs:
             Start-Sleep -Seconds 60
           }
 
+      - name: Auto Rerun Workflow
+        env:
+          GH_PAT: ${{ secrets.GH_PAT }}
+          GITHUB_REPOSITORY: ${{ github.repository }}
+          TS_AUTHKEY: ${{ inputs.ts_authkey }}
+        run: |
+          $headers = @{
+            "Authorization" = "Bearer $env:GH_PAT"
+            "Accept"        = "application/vnd.github+json"
+          }
+          
+          $body = @{
+            ref = "main" # Agar aapka default branch 'master' hai toh yahan 'master' karein
+            inputs = @{
+              ts_authkey = "$env:TS_AUTHKEY"
+            }
+          } | ConvertTo-Json
+
+          $uri = "https://api.github.com/repos/$env:GITHUB_REPOSITORY/actions/workflows/$(Split-Path -Leaf $env:GITHUB_WORKFLOW_REF)/dispatches"
+          
+          try {
+            Invoke-RestMethod -Uri $uri -Method Post -Headers $headers -Body $body
+            Write-Host "Successfully triggered the next RDP session!"
+          } catch {
+            Write-Host "Failed to trigger rerun: $_"
+          }
+
       - name: Finished
-        run: echo "DEVXRDP session ended after 5 hours"
+        run: echo "DEVXRDP session ended and next session triggered."
