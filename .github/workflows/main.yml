@@ -1,4 +1,4 @@
-Name: DEVXRDP – RDP + Tailscale (Auto-Rerun)
+name: DEVXRDP – RDP + Tailscale (Auto-Rerun)
 
 on:
   workflow_dispatch:
@@ -101,13 +101,14 @@ jobs:
           }
           
           $body = @{
-            ref = "main" # Agar aapka default branch 'master' hai toh yahan 'master' karein
+            ref = "main"
             inputs = @{
               ts_authkey = "$env:TS_AUTHKEY"
             }
           } | ConvertTo-Json
 
-          $uri = "https://api.github.com/repos/$env:GITHUB_REPOSITORY/actions/workflows/$(Split-Path -Leaf $env:GITHUB_WORKFLOW_REF)/dispatches"
+          # Yahan file ka naam seedha 'main.yml' kar diya hai
+          $uri = "https://api.github.com/repos/$env:GITHUB_REPOSITORY/actions/workflows/main.yml/dispatches"
           
           try {
             Invoke-RestMethod -Uri $uri -Method Post -Headers $headers -Body $body
